@@ -30,53 +30,7 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 	
 
 		public function init_form_fields() {	  
-			$this->form_fields = apply_filters( 'wc_offline_form_fields', array(
-		  
-				'enabled' => array(
-					'title'   => __( 'Enable/Disable', 'wc-gateway-offline' ),
-					'type'    => 'checkbox',
-					'label'   => __( 'Enable Offline Payment', 'wc-gateway-offline' ),
-					'default' => 'yes'
-				),
-				
-				'title' => array(
-					'title'       => __( 'Title', 'wc-gateway-offline' ),
-					'type'        => 'text',
-					'description' => __( 'This controls the title for the payment method the customer sees during checkout.', 'wc-gateway-offline' ),
-					'default'     => '',
-					'desc_tip'    => true,
-				),
-				
-				'description' => array(
-					'title'       => __( 'Description', 'wc-gateway-offline' ),
-					'type'        => 'textarea',
-					'description' => __( 'Payment method description that the customer will see on your checkout.', 'wc-gateway-offline' ),
-					'default'     => __( 'Please remit payment to Store Name upon pickup or delivery.', 'wc-gateway-offline' ),
-					'desc_tip'    => true,
-				),
-				
-				'instructions' => array(
-					'title'       => __( 'Instructions', 'wc-gateway-offline' ),
-					'type'        => 'textarea',
-					'description' => __( 'Instructions that will be added to the thank you page and emails.', 'wc-gateway-offline' ),
-					'default'     => '',
-					'desc_tip'    => true,
-				),
-				'CHAVE_ZPK' => array(
-					'title'       => "Chave ZPK",
-					'type'        => 'text',
-					'description' => "insira sua chave",
-					'default'     => '',
-					'desc_tip'    => true,
-				),
-				'SELLER_ID' => array(
-					'title'       => "Seller ID",
-					'type'        => 'text',
-					'description' => "insira sua chave",
-					'default'     => '',
-					'desc_tip'    => true,
-				),
-			) );
+			$this->form_fields = apply_filters( 'wc_offline_form_fields', DigitalFig::fields() );
 		}
 	
 

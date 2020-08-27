@@ -7,7 +7,7 @@ final class WC_DC_FIG
     const NAME         = "WooDigintalCombo";
     const ID           = "woo_digital_combo";
     const ID_MKT_PLACE = "83824523b30a4f44a6231c46319c8c12";
-    const ICO          = self::BASE . "/static/images/icone-white.svg";
+    const ICO          = BASE_DCP . "/static/images/logo/logo.svg";
     const METHOD_TITLE = "Woo Digital Combo";
     const HAS_FIELDS   = true;
     const HAS_DESCRIPT = "A forma mais fácil de vender através de boleto, cartão de crédito e débito recorrente via Woocommerce.";
@@ -44,6 +44,7 @@ final class WC_DC_FIG
     static function auto_load()
     {
         $includes = [
+            "DigitalFig",
             "WooDigintalCombo",
             "WDC_Validacao",
             "Zoppintegracao"

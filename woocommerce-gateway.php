@@ -31,6 +31,8 @@
  
 defined( 'ABSPATH' ) || exit;
 
+define( 'BASE_DCP', trailingslashit( WP_PLUGIN_URL ) . plugin_basename( dirname( __FILE__ ) ) );
+
 if( ! class_exists( 'WC_DC_FIG' ) ) :
 	include_once __DIR__ . "/includes/WC_DC_FIG.php";
 	add_action( 'plugins_loaded', [ "WC_DC_FIG", "init" ] );
