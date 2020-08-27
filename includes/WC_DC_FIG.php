@@ -11,6 +11,7 @@ final class WC_DC_FIG
     const METHOD_TITLE = "Woo Digital Combo";
     const HAS_FIELDS   = true;
     const HAS_DESCRIPT = "A forma mais fácil de vender através de boleto, cartão de crédito e débito recorrente via Woocommerce.";
+    const TEXT_BUTTON  = "Pagar com Digital Combo";
 
     static function init()
     {
