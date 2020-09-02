@@ -48,7 +48,10 @@ final class WC_DC_FIG
             "DigitalFig",
             "WooDigintalCombo",
             "WDC_Validacao",
-            "Zoppintegracao"
+            "Zoppintegracao",
+            "Curl",
+            "Zoop",
+            "Gateway",
         ];
         foreach( $includes as $nomeClass ):
             if( ! class_exists( $nomeClass ) ) :

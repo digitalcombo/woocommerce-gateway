@@ -32,13 +32,19 @@ final class DigitalFig
                 'default'     => '',
                 'desc_tip'    => true,
             ],
-            'CHAVE_ZPK' => [
-                'title'       => "Chave ZPK",
-                'type'        => 'text',
-                'description' => "insira sua chave",
-                'default'     => '',
-                'desc_tip'    => true,
-            ]
+            'boleto' => [
+                'title'   => 'Ativar/Desativar',
+                'type'    => 'checkbox',
+                'label'   => "Pagar via Boleto",
+                'default' => 'yes'
+            ],
+            'card' => [
+                'title'   => 'Ativar/Desativar',
+                'type'    => 'checkbox',
+                'label'   => "Pagar via Cartão de Credito",
+                'default' => 'yes'
+            ],
+           
         ];
     }
 }
