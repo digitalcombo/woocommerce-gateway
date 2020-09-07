@@ -32,17 +32,16 @@ final class DigitalFig
                 'default'     => '',
                 'desc_tip'    => true,
             ],
-            'boleto' => [
-                'title'   => 'Ativar/Desativar',
-                'type'    => 'checkbox',
-                'label'   => "Pagar via Boleto",
-                'default' => 'yes'
-            ],
-            'card' => [
-                'title'   => 'Ativar/Desativar',
-                'type'    => 'checkbox',
-                'label'   => "Pagar via Cartão de Credito",
-                'default' => 'yes'
+            'pagar_como' => [
+                'title'   => 'Pagar via',
+                'type'    => 'select',
+                'label'   => "Escolha seu meio de pagamento",
+                'default' => 'cartao_credito_e_boleto',
+                'options' => [
+                    "cartao_credito_e_boleto" => "Cartão Credito e Boleto",
+                    "cartao_de_credito" => "Somente via Cartão Credito",
+                    "boleto" => "Somente via Boleto",
+                ]
             ],
            
         ];

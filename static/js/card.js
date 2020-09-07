@@ -59,3 +59,14 @@ globalThis.card_cvv = () =>
         $vCvv.innerHTML = "123"
     }
 }
+
+globalThis.opcao_pagamento = () => {
+    let $type_pagamento     = document.querySelector( "#type_pagamento" )
+    let $card_digital_combo = document.querySelector( "#card_digital_combo" )
+    if( $type_pagamento.value == "cartao_credito" ) {
+        $card_digital_combo.removeAttribute( 'hidden' )
+    } else {
+        $card_digital_combo.setAttribute( 'hidden', '' )    
+    }
+}
+globalThis.opcao_pagamento()

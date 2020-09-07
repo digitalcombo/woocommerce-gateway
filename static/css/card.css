@@ -60,3 +60,12 @@
     grid-template-columns: repeat( 2, 1fr );
     grid-gap: 20px;
 }
+.card_form select {
+    display: block;
+    width: 100%;
+    border: 1px solid #DDD;
+    padding: 5px 10px;
+}
+[hidden] {
+    display: none !important;
+}

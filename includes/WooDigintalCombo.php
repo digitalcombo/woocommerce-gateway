@@ -16,6 +16,7 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 		$this->description  = $this->get_option( 'description' );
 		$this->instructions = $this->get_option( 'instructions', $this->description );
 		$this->id_vendedor  = $this->get_option( 'SELLER_ID' );
+		$this->pagar_como   = $this->get_option( 'pagar_como' );
 		add_action( 'woocommerce_update_options_payment_gateways_'. $this->id, [ $this, 'process_admin_options'] );		
 	}
 	
@@ -27,8 +28,8 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 	public function process_payment( $pedido_id ) 
 	{
 		global $woocommerce;
-		$pedido = new WC_Order( $pedido_id );		
-		$tipo_transacao   = "cartao_credito";
+		$pedido           = new WC_Order( $pedido_id );		
+		$tipo_transacao   = isset( $_POST["type_pagamento"] ) ? $_POST["type_pagamento"]: "cartao_credito" ;
 		$validar_trasacao = false;
 		if( $tipo_transacao ==  "cartao_credito" ) {
 			$validar_trasacao = $this->cartao_credito( $pedido );
@@ -48,41 +49,51 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 	
 	public function payment_fields()
 	{
+		$modo_de_pagamento = $this->pagar_como;
 		include_once __DIR__ . "/../public/formulario-tramparent-dc.php";
 	}
 
-	public function debug( $teste )
+	public function debug( $teste, $isJson = false )
 	{
-		file_put_contents( __DIR__ . "/../debug.json", $teste );
+		if( $isJson ) {
+			file_put_contents( __DIR__ . "/../debug.json", $teste );
+		} else {
+			file_put_contents( __DIR__ . "/../debug.json", json_encode( $teste ) );
+		}
 	}
 
 	public function boleto( $pedido )
 	{
+		// billing
+		// $pedido = gettype( $pedido );
+
 		$gateway    = new Gateway;
-		$boleto     = $gateway->boleto(
-			[
-				"first_name"  => $pedido->billing->first_name, 
-				"last_name"   => $pedido->billing->last_name,
-				"taxpayer_id" => "571.615.310-04",
-				"email"       => $pedido->billing->email, 
-				"address"     => [
-					"line1"        => $pedido->billing->address_1, 
-					"line2"        => $pedido->billing->address_2, 
-					"neighborhood" => "A completar Bairro", 
-					"city"         => $pedido->billing->city, 
-					"state"        => $pedido->billing->state, 
-					"postal_code"  => $pedido->billing->postcode, 
-					"country_code" => "BR" 
-				]
-			],
-			[
-				"amount"       => $pedido->total,
-				"currency"     => "BRL",
-				"description"  => "venda",
-				"payment_type" => "boleto"
+		$usuario    = [
+			"first_name"  => $pedido->get_billing_first_name(), 
+			"last_name"   => $pedido->get_billing_last_name(),
+			"taxpayer_id" => "571.615.310-04",
+			"email"       => $pedido->get_billing_email(), 
+			"address"     => [
+				"line1"        => $pedido->get_billing_address_1(), 
+				"line2"        => $pedido->get_billing_address_2(), 
+				"neighborhood" => "A completar Bairro", 
+				"city"         => $pedido->get_billing_city(), 
+				"state"        => $pedido->get_billing_state(), 
+				"postal_code"  => $pedido->get_billing_postcode(), 
+				"country_code" => "BR" 
 			]
-		);
-		return true;
+		];
+		$compra = [
+			"amount"       => str_replace( '.', '', $pedido->total ),
+			"currency"     => "BRL",
+			"description"  => "venda"
+		];
+		$boleto     = $gateway->boleto( $usuario, $compra );
+
+		// $this->debug(  $boleto  );
+
+		// return false;
+		return isset( $boleto->error ) ? false : true;
 	}	
 	public function cartao_credito( $pedido )
 	{
@@ -108,9 +119,9 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 					],
 					"currency" => "BRL",
 					"type"     => "card",
-					"amount"   => "str_replace( '.', '', $pedido->total )"
+					"amount"   => str_replace( '.', '', $pedido->total )
 				],
-				"amount"       => "str_replace( '.', '', $pedido->total )",
+				"amount"       => str_replace( '.', '', $pedido->total ),
 				"currency"     => "BRL",
 				"description"  => "Venda",
 				"on_behalf_of" => $this->id_vendedor,
@@ -118,7 +129,6 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 			]	
 		);
 		$reposta = json_decode( $pagar_com_cartao );
-		$this->debug( $reposta );
 		return isset( $reposta->error ) ? false : true;
 	}
 }
