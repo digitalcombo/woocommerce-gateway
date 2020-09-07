@@ -89,11 +89,20 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 			"description"  => "venda"
 		];
 		$boleto     = $gateway->boleto( $usuario, $compra );
-
+		$validacao  = isset( $boleto->error ) ? false : true;
+		if ( $validacao )
+		{
+			$ID     = $boleto->payment_method->id;
+			$CODE   = $boleto->payment_method->barcode;
+			$BOLETO = $boleto->payment_method->url;
+			$pedido->add_order_note(  "CODIGO DE BARRAS: $CODE", 'woothemes'  );
+			$pedido->add_order_note(  "TOKEN PEDIDO: $ID", 'woothemes'  );
+			$pedido->add_order_note(  "URL BOLETO: $BOLETO", 'woothemes'  );
+		}
 		// $this->debug(  $boleto  );
 
 		// return false;
-		return isset( $boleto->error ) ? false : true;
+		return $validacao;
 	}	
 	public function cartao_credito( $pedido )
 	{
@@ -131,4 +140,5 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 		$reposta = json_decode( $pagar_com_cartao );
 		return isset( $reposta->error ) ? false : true;
 	}
+
 }

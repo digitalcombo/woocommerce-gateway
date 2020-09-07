@@ -17,7 +17,7 @@ final class WC_DC_FIG
     {
         if( self::verifica_woocomerce_esta_ativo() ) :
             self::auto_load();
-            
+            add_action( 'woocommerce_api_digitalcombo', [ __CLASS__, 'callback_handler' ] );
             add_filter( 'woocommerce_payment_gateways', [ __CLASS__ , "adicionar_como_meio_de_pagamento" ] );
             // add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), [ __CLASS__, "adiciona_link_de_configuracao" ] );
         endif;
@@ -59,5 +59,41 @@ final class WC_DC_FIG
             endif;
         endforeach;
     }
+    static function callback_handler()
+	{
+        header( 'HTTP/1.1 200 OK' );
+        global $wpdb;
+        $table_perfixed = $wpdb->prefix . 'comments';
+        if( isset( $_REQUEST['id'] ) && isset( $_REQUEST['type'] ) )
+        {
+            $token   = $_REQUEST['id'];
+            $results = $wpdb->get_results("
+                SELECT *
+                FROM $table_perfixed
+                WHERE  comment_content = 'TOKEN PEDIDO: $token'
+            ");
+            $pedido_id = $results[0]->comment_post_ID ?? 0;
+            if( $pedido_id  )
+            {
+                $order = new WC_Order( $pedido_id );
+            }
+            switch ( $_REQUEST['type'] ) 
+            {
+                case 'subscription.active':
+                case 'transaction.succeeded':
+                    $order->update_status('completed', "Pagamento confirmado");
+                    break;
+                case 'subscription.deleted':
+                case 'subscription.expired':
+                case 'subscription.suspended':
+                case 'transaction.canceled':
+                case 'transaction.failed':
+                case 'transaction.reversed':
+                    $order->update_status('failed', "Pedido cancelado ou sumpenso");
+                    break;
+            }
+        }
+        die;
+	}
 
 }
