@@ -12,11 +12,12 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 		$this->order_button_text  = WC_DC_FIG::TEXT_BUTTON;		
 		$this->init_form_fields();
 		$this->init_settings();
-		$this->title        = $this->get_option( 'title' );
-		$this->description  = $this->get_option( 'description' );
-		$this->instructions = $this->get_option( 'instructions', $this->description );
-		$this->id_vendedor  = $this->get_option( 'SELLER_ID' );
-		$this->pagar_como   = $this->get_option( 'pagar_como' );
+		$this->title               = $this->get_option( 'title' );
+		$this->description         = $this->get_option( 'description' );
+		$this->instructions        = $this->get_option( 'instructions', $this->description );
+		$this->id_vendedor         = $this->get_option( 'SELLER_ID' );
+		$this->pagar_como          = $this->get_option( 'pagar_como' );
+		$this->vencimento_boleto   = $this->get_option( 'vencimento_boleto' );
 		add_action( 'woocommerce_update_options_payment_gateways_'. $this->id, [ $this, 'process_admin_options'] );		
 	}
 	
@@ -56,9 +57,9 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 	public function debug( $teste, $isJson = false )
 	{
 		if( $isJson ) {
-			file_put_contents( __DIR__ . "/../debug.json", $teste );
+			file_put_contents( __DIR__ . "/../log/trasasion-" . uniqid() . ".json", json_encode( $teste ) );
 		} else {
-			file_put_contents( __DIR__ . "/../debug.json", json_encode( $teste ) );
+			file_put_contents( __DIR__ . "/../log/trasasion-" . uniqid() . ".json", $teste );
 		}
 	}
 
@@ -71,12 +72,12 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 		$usuario    = [
 			"first_name"  => $pedido->get_billing_first_name(), 
 			"last_name"   => $pedido->get_billing_last_name(),
-			"taxpayer_id" => "571.615.310-04",
+			"taxpayer_id" => $pedido->get_meta('_billing_cpf'),
 			"email"       => $pedido->get_billing_email(), 
 			"address"     => [
 				"line1"        => $pedido->get_billing_address_1(), 
 				"line2"        => $pedido->get_billing_address_2(), 
-				"neighborhood" => "A completar Bairro", 
+				"neighborhood" => $pedido->get_meta('_billing_bairro'), 
 				"city"         => $pedido->get_billing_city(), 
 				"state"        => $pedido->get_billing_state(), 
 				"postal_code"  => $pedido->get_billing_postcode(), 
@@ -84,9 +85,12 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 			]
 		];
 		$compra = [
-			"amount"       => str_replace( '.', '', $pedido->total ),
-			"currency"     => "BRL",
-			"description"  => "venda"
+			"amount"         => str_replace( '.', '', $pedido->total ),
+			"currency"       => "BRL",
+			"description"    => "venda",
+			"payment_method" => [
+				"expiration_date" => $this->additionalDays( $this->vencimento_boleto )
+			]
 		];
 		$boleto     = $gateway->boleto( $usuario, $compra );
 		$validacao  = isset( $boleto->error ) ? false : true;
@@ -98,9 +102,9 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 			$pedido->add_order_note(  "CODIGO DE BARRAS: $CODE", 'woothemes'  );
 			$pedido->add_order_note(  "TOKEN PEDIDO: $ID", 'woothemes'  );
 			$pedido->add_order_note(  "URL BOLETO: $BOLETO", 'woothemes'  );
+			$this->debug( $boleto, true );
 		}
-		// $this->debug(  $boleto  );
-
+		// $this->debug( $compra  );	
 		// return false;
 		return $validacao;
 	}	
@@ -137,8 +141,20 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 				"payment_type" => "credit"
 			]	
 		);
-		$reposta = json_decode( $pagar_com_cartao );
-		return isset( $reposta->error ) ? false : true;
+		$validacao = isset( $pagar_com_cartao->error ) ? false : true;
+		if ( $validacao )
+		{
+			$ID     = $pagar_com_cartao->payment_method->id;
+			$pedido->add_order_note(  "TOKEN PEDIDO: $ID", 'woothemes' );
+			$this->debug( $pagar_com_cartao, true );
+		}
+		return $validacao;
+	}
+	public function additionalDays( string $day ) 
+	{
+		$date = date_create( Date( 'Y-m-d' ) );
+		date_add( $date, date_interval_create_from_date_string( "$day days" ) );
+		return date_format( $date, 'Y-m-d' );
 	}
 
 }

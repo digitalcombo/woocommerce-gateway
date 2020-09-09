@@ -25,6 +25,13 @@ final class DigitalFig
                 'default'     => '',
                 'desc_tip'    => true,
             ],
+            'vencimento_boleto' => [
+                'title'       => 'Vencimento Boleto',
+                'type'        => 'number',
+                'description' => 'Coloque Aqui a quantidade de de dias adicionar a vencimento do boleto',
+                'default'     => 0,
+                'desc_tip'    => true,
+            ],
             'SELLER_ID' => [
                 'title'       => "ID de Vendedor",
                 'type'        => 'text',

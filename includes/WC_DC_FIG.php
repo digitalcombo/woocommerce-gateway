@@ -17,6 +17,8 @@ final class WC_DC_FIG
     {
         if( self::verifica_woocomerce_esta_ativo() ) :
             self::auto_load();
+            self::campos_adicionais();
+            self::mostrar_link_boleto_apos_finalizar();
             add_action( 'woocommerce_api_digitalcombo', [ __CLASS__, 'callback_handler' ] );
             add_filter( 'woocommerce_payment_gateways', [ __CLASS__ , "adicionar_como_meio_de_pagamento" ] );
             // add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), [ __CLASS__, "adiciona_link_de_configuracao" ] );
@@ -64,6 +66,7 @@ final class WC_DC_FIG
         header( 'HTTP/1.1 200 OK' );
         global $wpdb;
         $table_perfixed = $wpdb->prefix . 'comments';
+        file_put_contents( __DIR__ . "/../log/webhook-" . uniqid() . ".json", json_encode( $_REQUEST ) );
         if( isset( $_REQUEST['id'] ) && isset( $_REQUEST['type'] ) )
         {
             $token   = $_REQUEST['id'];
@@ -94,6 +97,73 @@ final class WC_DC_FIG
             }
         }
         die;
-	}
+    }
+    
+    static function campos_adicionais()
+    {
+        add_filter( 'woocommerce_checkout_fields' , 'custom_override_checkout_fields' );
+
+        function custom_override_checkout_fields( $fields ) {
+            $fields['billing']['billing_bairro'] = [
+                'type'        => 'text',
+                'label'       => "bairro",
+                'placeholder' => "Digite aqui seu bairro",
+                'required'    => true,
+                'priority'    => 61
+            ];
+            $fields['billing']['billing_cpf'] = [
+                'type' => 'text',
+                'label' => "CPF",
+                'placeholder' => "000.000.000-00",
+                'required' => true,
+                'priority'    => 30
+            ];
+            return $fields;
+        }
+    }
+
+    static function mostrar_link_boleto_apos_finalizar()
+    {
+        add_filter('woocommerce_thankyou_order_received_text', 'woo_change_order_received_text', 10, 2 );
+        function woo_change_order_received_text( $str, $order ) {
+            global $wpdb;
+            $table_perfixed = $wpdb->prefix . 'comments';
+            $id             = $order->get_id();
+            $results = $wpdb->get_results("
+                SELECT *
+                FROM $table_perfixed
+                WHERE comment_post_ID = '$id'
+            
+            ");
+            $codigo_de_barra = array_filter( $results, function( $comment ) {		 
+                return stripos( $comment->comment_content, "CODIGO DE BARRAS:" ) !== false;
+            } );
+            $codigo_de_barra = array_values(  $codigo_de_barra );
+            if( count($codigo_de_barra) > 0 ) {
+                $codigo_de_barra = $codigo_de_barra[0]->comment_content;
+                $codigo_de_barra = str_replace( "CODIGO DE BARRAS:", '', $codigo_de_barra );
+                $str .= "
+                    <li>Seu código de barras é:  <b>$codigo_de_barra</b></li>
+                ";		
+            }
+            $link_boleto = array_filter( $results, function( $comment ) {		 
+                return stripos( $comment->comment_content, "URL BOLETO:" ) !== false;		
+            } );
+            $link_boleto = array_values(  $link_boleto );
+            if( count($link_boleto) > 0 ) {
+                $link_boleto = $link_boleto[0]->comment_content;
+                $link_boleto = str_replace( "URL BOLETO:", '', $link_boleto );
+                $str .= "
+                    <li> 
+                        Para imprimir seu boleto
+                        <a href=\"$link_boleto\" target=\"_blank\">
+                            Clique aqui
+                        </a>
+                    </li>
+                ";		
+            }
+            return $str;
+        }
+    }
 
 }
