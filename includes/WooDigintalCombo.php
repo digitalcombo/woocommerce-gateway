@@ -92,7 +92,7 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 				"expiration_date" => $this->additionalDays( $this->vencimento_boleto )
 			]
 		];
-		$boleto     = $gateway->boleto( $usuario, $compra );
+		$boleto     = $gateway->boleto( $usuario, $compra, $this->id_vendedor );
 		$validacao  = isset( $boleto->error ) ? false : true;
 		if ( $validacao )
 		{
@@ -104,7 +104,7 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 			$pedido->add_order_note(  "URL BOLETO: $BOLETO", 'woothemes'  );
 			$this->debug( $boleto, true );
 		}
-		// $this->debug( $compra  );	
+		$this->debug( $boleto , true );	
 		// return false;
 		return $validacao;
 	}	

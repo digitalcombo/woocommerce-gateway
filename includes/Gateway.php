@@ -9,9 +9,9 @@ class Gateway extends Zoop {
 
     public function transCard( $card ) { return json_decode($this->transactions( $card, 'transactions' )); }
 
-    public function boleto( $buyer, $info ) {
+    public function boleto( $buyer, $info, $idSeller ) {
         $customer = $this->customer($buyer);
-        return json_decode($this->boletoOrder( $info, $customer->id ));
+        return json_decode($this->boletoOrder( $info, $customer->id, $idSeller ));
     }
 
     public function card( $card, $customer ) {
@@ -38,6 +38,18 @@ class Gateway extends Zoop {
         ];
 
         return json_decode($this->transactions( $subs, 'subscriptions', true ));
+    }
+
+    static function webHook()
+    {
+        $request = file_get_contents('php://input');
+        file_put_contents( __DIR__ . "/../log/webhook-" . Date( 'Y-m-d-H-i-' ) . uniqid() . ".json", $request );
+        $request = json_decode( $request );
+        $response = [
+            "type" => $request->type,
+            "id"   => $request->payload->object->payment_method->id
+        ];
+        return $response;        
     }
 
 }

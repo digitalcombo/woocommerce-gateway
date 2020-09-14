@@ -7,9 +7,9 @@ class Zoop extends Curl {
     private $Api;
 
     function __construct() {
-        $this->idMarketplace = '83824523b30a4f44a6231c46319c8c12';
+        $this->idMarketplace = WC_DC_FIG::ID_MKT_PLACE;
         $this->idSeller      = '6cf4bb1e78c6428786fc8fe6ddada3a6';
-        $this->keyZpk        = 'zpk_test_lcyUVmcv7ISdesnZe4m3w5eN';
+        $this->keyZpk        = WC_DC_FIG::ZPK;
         $this->api           = 'https://api.zoop.ws/';
     }
 
@@ -21,8 +21,8 @@ class Zoop extends Curl {
         return $this->post( $fullUrl, $arr, [], $this->keyZpk );
     }
 
-    public function boletoOrder( $info, $customer ) {
-        $info['on_behalf_of'] = $this->idSeller;
+    public function boletoOrder( $info, $customer, $idSeller ) {
+        $info['on_behalf_of'] = $idSeller;
         $info['customer']     = $customer;
         $info['payment_type'] = "boleto";
         return $this->transactions( $info, 'transactions' );

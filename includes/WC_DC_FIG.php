@@ -6,7 +6,8 @@ final class WC_DC_FIG
     const BASE         = __DIR__ . "/..";
     const NAME         = "WooDigintalCombo";
     const ID           = "woo_digital_combo";
-    const ID_MKT_PLACE = "83824523b30a4f44a6231c46319c8c12";
+    const ID_MKT_PLACE = "7e704295b1ba41e88574e24830d5369a";
+    const ZPK          = "zpk_prod_77hQAABdrBzAKVr8cZuaHWk8";
     const ICO          = BASE_DCP . "/static/images/logo/logo.svg";
     const METHOD_TITLE = "Woo Digital Combo";
     const HAS_FIELDS   = true;
@@ -50,7 +51,6 @@ final class WC_DC_FIG
             "DigitalFig",
             "WooDigintalCombo",
             "WDC_Validacao",
-            "Zoppintegracao",
             "Curl",
             "Zoop",
             "Gateway",
@@ -66,10 +66,10 @@ final class WC_DC_FIG
         header( 'HTTP/1.1 200 OK' );
         global $wpdb;
         $table_perfixed = $wpdb->prefix . 'comments';
-        file_put_contents( __DIR__ . "/../log/webhook-" . uniqid() . ".json", json_encode( $_REQUEST ) );
-        if( isset( $_REQUEST['id'] ) && isset( $_REQUEST['type'] ) )
+        $request        = Gateway::webHook();
+        if( isset( $request['id'] ) && isset( $request['type'] ) )
         {
-            $token   = $_REQUEST['id'];
+            $token   = $request['id'];
             $results = $wpdb->get_results("
                 SELECT *
                 FROM $table_perfixed
@@ -80,7 +80,7 @@ final class WC_DC_FIG
             {
                 $order = new WC_Order( $pedido_id );
             }
-            switch ( $_REQUEST['type'] ) 
+            switch ( $request['type'] ) 
             {
                 case 'subscription.active':
                 case 'transaction.succeeded':
