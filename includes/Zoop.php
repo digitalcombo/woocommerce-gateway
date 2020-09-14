@@ -25,6 +25,7 @@ class Zoop extends Curl {
         $info['on_behalf_of'] = $idSeller;
         $info['customer']     = $customer;
         $info['payment_type'] = "boleto";
+        $info['logo']         = "https://homologacao.digitalcombo.com.br/wp-content/plugins/woocommerce-gateway/static/images/logo/logo.png";
         return $this->transactions( $info, 'transactions' );
     }
 }
