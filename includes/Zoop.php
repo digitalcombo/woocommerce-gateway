@@ -2,13 +2,11 @@
 
 class Zoop extends Curl {
     private $idMarketplace;
-    private $idSeller;
     private $keyZpk;
-    private $Api;
+    private $api;
 
     function __construct() {
         $this->idMarketplace = WC_DC_FIG::ID_MKT_PLACE;
-        $this->idSeller      = '6cf4bb1e78c6428786fc8fe6ddada3a6';
         $this->keyZpk        = WC_DC_FIG::ZPK;
         $this->api           = 'https://api.zoop.ws/';
     }

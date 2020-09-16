@@ -1,0 +1,9 @@
+{
+    "error": {
+        "status": "Bad Request",
+        "status_code": 400,
+        "type": "invalid_request_error",
+        "category": "missing_required_param",
+        "message": "Missing required param: payment_type. Please verify request parameters."
+    }
+}

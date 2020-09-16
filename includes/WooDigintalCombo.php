@@ -18,6 +18,7 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 		$this->id_vendedor         = $this->get_option( 'SELLER_ID' );
 		$this->pagar_como          = $this->get_option( 'pagar_como' );
 		$this->vencimento_boleto   = $this->get_option( 'vencimento_boleto' );
+		$this->supports            = array( 'subscriptions', 'products' );
 		add_action( 'woocommerce_update_options_payment_gateways_'. $this->id, [ $this, 'process_admin_options'] );		
 	}
 	
@@ -57,9 +58,9 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 	public function debug( $teste, $isJson = false )
 	{
 		if( $isJson ) {
-			file_put_contents( __DIR__ . "/../log/trasasion-" . uniqid() . ".json", json_encode( $teste ) );
+			file_put_contents( __DIR__ . "/../log/trasasion-" . Date( 'Y-m-d-H-i' ) . ".json", json_encode( $teste ) );
 		} else {
-			file_put_contents( __DIR__ . "/../log/trasasion-" . uniqid() . ".json", $teste );
+			file_put_contents( __DIR__ . "/../log/trasasion-" . Date( 'Y-m-d-H-i' ) . ".json", $teste );
 		}
 	}
 
@@ -119,7 +120,7 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 			"mes"    => $mes_ano[0] ?? "",
 			"ano"    => $mes_ano[1] ?? "",
 		];		
-		$pagar_com_cartao = $gateway->transCard( 
+		$pagar_com_cartao = $gateway->transfCard( 
 			[
 				"source" => [
 					"usage" => "single_use",
@@ -139,14 +140,15 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 				"description"  => "Venda",
 				"on_behalf_of" => $this->id_vendedor,
 				"payment_type" => "credit"
-			]	
+			]
 		);
+		file_put_contents( __DIR__ . "/../log/_card-" . Date( 'Y-m-d-H-i' ) . ".json", json_encode( $pagar_com_cartao ) );
+
 		$validacao = isset( $pagar_com_cartao->error ) ? false : true;
 		if ( $validacao )
 		{
 			$ID     = $pagar_com_cartao->payment_method->id;
 			$pedido->add_order_note(  "TOKEN PEDIDO: $ID", 'woothemes' );
-			$this->debug( $pagar_com_cartao, true );
 		}
 		return $validacao;
 	}

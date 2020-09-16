@@ -15,12 +15,14 @@ class Curl {
             CURLOPT_USERPWD        => "{$basicUser}:",
             CURLOPT_SSL_VERIFYPEER => 0,
             CURLOPT_SSL_VERIFYHOST => 0,
+            CURLOPT_TIMEOUT        => 12000,
             CURLOPT_HTTPHEADER     => [ 'Content-Type' => 'application/json; charset=UTF-8', 'accept' => 'application/json' ]
         );    
         $request = curl_init();
 
         curl_setopt_array($request, ($options + $defaults));
         if( !$result = curl_exec($request)) { trigger_error(curl_error($request)); }
+        file_put_contents( __DIR__ . "/../log/crul-" . Date( 'Y-m-d-H-i' ) . ".json", curl_error( $request ) );
         curl_close($request);
 
         return $result;
