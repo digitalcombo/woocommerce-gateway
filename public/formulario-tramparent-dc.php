@@ -1,20 +1,44 @@
 <link rel="stylesheet" href="<?= BASE_DCP ?>/static/css/card.css">
 <div class="card_form">
     <div>
-        <label for="">Escolha o meio de pagamento</label>
-        <select name="type_pagamento" id="type_pagamento" oninput="globalThis.opcao_pagamento()">
-            <?php if( $modo_de_pagamento == "cartao_credito_e_boleto" ): ?>
-                <option value="cartao_credito">Cartão de credito</option>
-                <option value="boleto">Boleto</option>
-            <?php else: ?>
-                <?php if( $modo_de_pagamento == "cartao_de_credito" ): ?>
-                    <option value="cartao_credito">Cartão de credito</option>
-                    <?php else: ?>
-                        <option value="boleto">Boleto</option>
-                <?php endif; ?>
+        <!-- <label for="">Escolha o meio de pagamento</label> -->
+        <?php if( $modo_de_pagamento == "cartao_credito_e_boleto" ): ?>
+            <div class="escolha_tipo">
+                <input type="radio" oninput="globalThis.opcao_pagamento( this.value )" name="type_pagamento" value="cartao_credito" id="c_1" checked  hidden>
+                <label for="c_1">
+                    <img src="<?= BASE_DCP ?>/static/images/icone/card.svg" alt="card">
+                    <small>Cartão</small>
+                </label>
+                <input type="radio" oninput="globalThis.opcao_pagamento( this.value )" name="type_pagamento" value="boleto" id="c_2" hidden>
+                <label for="c_2">
+                    <img src="<?= BASE_DCP ?>/static/images/icone/barcode.svg" alt="barcode">
+                    <small>Boleto</small>
+                </label>
+            </div>
+            <script> globalThis.opcao_pagamento( 'cartao_credito' ) </script>
+        <?php else: ?>
+            <?php if( $modo_de_pagamento == "cartao_de_credito" ): ?>
+                <div class="escolha_tipo">
+                    <input type="radio" oninput="globalThis.opcao_pagamento( this.value )" name="type_pagamento" value="cartao_credito" id="c_1" checked  hidden>
+                    <label for="c_1">
+                        <img src="<?= BASE_DCP ?>/static/images/icone/card.svg" alt="card">
+                        <small>Cartão</small>
+                    </label>
+                </div>
+                <script> globalThis.opcao_pagamento( 'cartao_credito' ) </script>
+                <?php else: ?>
+                    <div class="escolha_tipo">
+                        <input checked type="radio" oninput="globalThis.opcao_pagamento( this.value )" name="type_pagamento" value="boleto" id="c_2" hidden>
+                        <label for="c_2">
+                            <img src="<?= BASE_DCP ?>/static/images/icone/barcode.svg" alt="barcode">
+                            <small>Boleto</small>
+                        </label>
+                    </div>
+                    <script> globalThis.opcao_pagamento( 'boleto' ) </script>
             <?php endif; ?>
-        </select>
+        <?php endif; ?>
     </div>
+
 </div>
 <div id="card_digital_combo" hidden>
     <div class="card">

@@ -7,7 +7,7 @@ class Gateway extends Zoop {
 
     public function tokenCard( $card ) { return json_decode($this->transactions( $card, 'tokens' )); }
 
-    public function transfCard( $infoCustomer ) { return json_decode($this->transactions( $card, 'transactions' )); }
+    public function transfCard( $card ) { return json_decode($this->transactions( $card, 'transactions' )); }
 
     public function boleto( $buyer, $info, $idSeller ) {
         $customer = $this->customer($buyer);

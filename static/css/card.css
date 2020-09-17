@@ -69,3 +69,27 @@
 [hidden] {
     display: none !important;
 }
+.escolha_tipo {
+    display: grid;
+    grid-template-columns: 120px 120px 1fr;
+    grid-gap: 20px;
+}
+.escolha_tipo label {
+    display: block;
+    border: 3px solid #DDD;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    background-color: #0001;
+    filter: opacity(.5);
+}
+.escolha_tipo label img {
+    height: 32px;
+}
+.escolha_tipo label small {
+    display: block;
+}
+.escolha_tipo input:checked + label {
+    border: 3px solid #FF6B00;
+    filter: opacity(1);
+}
