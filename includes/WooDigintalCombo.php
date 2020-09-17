@@ -89,6 +89,7 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 			"amount"         => str_replace( '.', '', $pedido->total ),
 			"currency"       => "BRL",
 			"description"    => "venda",
+			"logo"           => "https://i.imgur.com/YrjT5ye.png",
 			"payment_method" => [
 				"expiration_date" => $this->additionalDays( $this->vencimento_boleto )
 			]
