@@ -50,6 +50,14 @@ final class DigitalFig
                     "boleto" => "Somente via Boleto",
                 ]
             ],
+            'mode_dev' => [
+                'title'   => 'Ativar/Desativar',
+                'label'   => 'Modo de Teste',
+                'type'    => 'checkbox',
+                'description'  => "Ao marcar a opção o modo de teste sera ativado",
+                'default' => 'yes',
+                'desc_tip' => true
+            ],
            
         ];
     }

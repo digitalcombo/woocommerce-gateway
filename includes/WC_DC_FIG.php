@@ -14,6 +14,10 @@ final class WC_DC_FIG
     const HAS_DESCRIPT = "A forma mais fácil de vender através de boleto, cartão de crédito e débito recorrente via Woocommerce.";
     const TEXT_BUTTON  = "Pagar com Digital Combo";
 
+    const ID_MKT_DEV   = "83824523b30a4f44a6231c46319c8c12";
+    const ZPK_DEV      = "zpk_test_lcyUVmcv7ISdesnZe4m3w5eN";
+    const SELER_DEV    = "6cf4bb1e78c6428786fc8fe6ddada3a6";
+    
     static function init()
     {
         if( self::verifica_woocomerce_esta_ativo() ) :
@@ -22,7 +26,13 @@ final class WC_DC_FIG
             self::mostrar_link_boleto_apos_finalizar();
             add_action( 'woocommerce_api_digitalcombo', [ __CLASS__, 'callback_handler' ] );
             add_filter( 'woocommerce_payment_gateways', [ __CLASS__ , "adicionar_como_meio_de_pagamento" ] );
-            // add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), [ __CLASS__, "adiciona_link_de_configuracao" ] );
+            add_filter( 'product_type_selector', [ __CLASS__, 'add_tipo_produto_recorrente' ] );
+            add_action( 'woocommerce_product_options_pricing', [ __CLASS__, 'campos_produto_recorrente' ] );
+            add_action( 'woocommerce_product_options_general_product_data', function(){
+                echo '<div class="options_group show_if_recorrente clear"></div>';
+            } );
+            add_action( 'admin_footer', [ __CLASS__, 'js_campos_produto_recorrente'] );
+            add_action( 'woocommerce_process_product_meta_recorrente', [ __CLASS__, 'save_frequencia_cobranca'] );
         endif;
     }
 
@@ -54,6 +64,8 @@ final class WC_DC_FIG
             "Curl",
             "Zoop",
             "Gateway",
+            "WC_Product_recorente",
+            "WC_Subscriptions_Product",
         ];
         foreach( $includes as $nomeClass ):
             if( ! class_exists( $nomeClass ) ) :
@@ -164,6 +176,66 @@ final class WC_DC_FIG
             }
             return $str;
         }
+    }
+    static function add_tipo_produto_recorrente( $types ) 
+    {
+        $types['recorrente'] = "Produto por Assinatura";
+       
+        return $types;
+    }
+    static function campos_produto_recorrente()
+    {
+        global $product_object;
+        echo "<div class='options_group show_if_recorrente'>";
+        woocommerce_wp_select(
+            array(
+                'id'          => '_recorrente',
+                'label'       =>'Tipo Contratacao',
+                'value'       => $product_object->get_meta( '_recorrente', true ),
+                'options' => [
+                    '1'  => 'Mensal',
+                    '3'  => 'Trimestral',
+                    '6'  => 'Semestral',
+                    '12' => 'Anual'
+                ]
+            )
+        );
+        echo "</div>";        
+    }
+    static function js_campos_produto_recorrente()
+    {
+        global $post, $product_object;
+
+        if ( ! $post ) { return; }
+
+        if ( 'product' != $post->post_type ) :
+        return;
+        endif;
+
+        $is_advanced = $product_object && 'recorrente' === $product_object->get_type() ? true : false;
+
+        ?>
+        <script type='text/javascript'>
+            jQuery(document).ready(function () {
+            jQuery('#general_product_data .pricing').addClass('show_if_recorrente');
+            <?php if ( $is_advanced ) { ?>
+                jQuery('#general_product_data .pricing').show();
+            <?php } ?>
+            });
+        </script>
+        <?php        
+    }
+    static function save_frequencia_cobranca( $prod_id )
+    {
+        $_recorrente = isset( $_POST['_recorrente'] ) ? sanitize_text_field( $_POST['_recorrente'] ) : '';
+        update_post_meta( $prod_id, '_recorrente', $_recorrente );
+        
+        update_post_meta( $prod_id, '_subscription_price', 15.80 );
+        update_post_meta( $prod_id, '_subscription_period_interval', 'week' );
+        update_post_meta( $prod_id, '_subscription_period_interval', 6 );
+        update_post_meta( $prod_id, '_subscription_length', 7 );
+        update_post_meta( $prod_id, '_subscription_trial_length', 3 );
+
     }
 
 }

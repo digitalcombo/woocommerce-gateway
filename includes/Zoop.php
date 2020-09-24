@@ -23,7 +23,7 @@ class Zoop extends Curl {
         $info['on_behalf_of'] = $idSeller;
         $info['customer']     = $customer;
         $info['payment_type'] = "boleto";
-        $info['logo']         = "https://i.imgur.com/YrjT5ye.png";
+        $info['logo']         = "https://i.imgur.com/lzVI0zH.png";
         return $this->transactions( $info, 'transactions' );
     }
 }

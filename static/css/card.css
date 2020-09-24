@@ -71,7 +71,7 @@
 }
 .escolha_tipo {
     display: grid;
-    grid-template-columns: 120px 120px 1fr;
+    grid-template-columns: repeat(3, 1fr);
     grid-gap: 20px;
 }
 .escolha_tipo label {
@@ -88,8 +88,19 @@
 }
 .escolha_tipo label small {
     display: block;
+    color: #111 !important;
+    font-weight: bold;
 }
 .escolha_tipo input:checked + label {
     border: 3px solid #FF6B00;
     filter: opacity(1);
+}
+@media screen and ( max-width: 800px )
+{
+    .card {
+        margin: 20px 10px;        
+    }
+    .card_number {
+        font-size: 18px;
+    }
 }

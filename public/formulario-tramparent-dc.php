@@ -4,10 +4,15 @@
         <!-- <label for="">Escolha o meio de pagamento</label> -->
         <?php if( $modo_de_pagamento == "cartao_credito_e_boleto" ): ?>
             <div class="escolha_tipo">
+                <input type="radio" oninput="globalThis.opcao_pagamento( this.value )" name="type_pagamento" value="cartao_credito" id="c_3" checked  hidden>
+                <label for="c_3">
+                    <img src="<?= BASE_DCP ?>/static/images/icone/card.svg" alt="card">
+                    <small>Debito</small>
+                </label>
                 <input type="radio" oninput="globalThis.opcao_pagamento( this.value )" name="type_pagamento" value="cartao_credito" id="c_1" checked  hidden>
                 <label for="c_1">
                     <img src="<?= BASE_DCP ?>/static/images/icone/card.svg" alt="card">
-                    <small>Cartão</small>
+                    <small>Credito</small>
                 </label>
                 <input type="radio" oninput="globalThis.opcao_pagamento( this.value )" name="type_pagamento" value="boleto" id="c_2" hidden>
                 <label for="c_2">
@@ -19,6 +24,11 @@
         <?php else: ?>
             <?php if( $modo_de_pagamento == "cartao_de_credito" ): ?>
                 <div class="escolha_tipo">
+                    <input type="radio" oninput="globalThis.opcao_pagamento( this.value )" name="type_pagamento" value="cartao_credito" id="c_3" checked  hidden>
+                    <label for="c_3">
+                        <img src="<?= BASE_DCP ?>/static/images/icone/card.svg" alt="card">
+                        <small>Debito</small>
+                    </label>
                     <input type="radio" oninput="globalThis.opcao_pagamento( this.value )" name="type_pagamento" value="cartao_credito" id="c_1" checked  hidden>
                     <label for="c_1">
                         <img src="<?= BASE_DCP ?>/static/images/icone/card.svg" alt="card">

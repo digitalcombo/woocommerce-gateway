@@ -18,8 +18,20 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 		$this->id_vendedor         = $this->get_option( 'SELLER_ID' );
 		$this->pagar_como          = $this->get_option( 'pagar_como' );
 		$this->vencimento_boleto   = $this->get_option( 'vencimento_boleto' );
-		$this->supports            = array( 'subscriptions', 'products' );
-		add_action( 'woocommerce_update_options_payment_gateways_'. $this->id, [ $this, 'process_admin_options'] );		
+		$this->supports            = [
+			'products', 
+			'subscriptions',
+			'subscription_cancellation', 
+			'subscription_suspension', 
+			'subscription_reactivation',
+			'subscription_amount_changes',
+			'subscription_date_changes',
+			'subscription_payment_method_change',
+			'subscription_payment_method_change_customer',
+			'subscription_payment_method_change_admin',
+			'multiple_subscriptions',
+		];
+		add_action( 'woocommerce_update_options_payment_gateways_'. $this->id, [ __CLASS__, 'process_admin_options'] );		
 	}
 	
 	public function init_form_fields() 
@@ -28,7 +40,7 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 	}
 
 	public function process_payment( $pedido_id ) 
-	{
+	{	
 		global $woocommerce;
 		$pedido           = new WC_Order( $pedido_id );		
 		$tipo_transacao   = isset( $_POST["type_pagamento"] ) ? $_POST["type_pagamento"]: "cartao_credito" ;
