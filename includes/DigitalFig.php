@@ -58,6 +58,43 @@ final class DigitalFig
                 'default' => 'yes',
                 'desc_tip' => true
             ],
+            'prezuiso_split' => [
+                'title'   => 'Arcar/Prezuiso',
+                'label'   => 'Recebedor arcar com prejuiso caso extorno',
+                'type'    => 'checkbox',
+                'description'  => "Ao marcar a opção o recebidor arcara com o prejuiso em caso extorno",
+                'default' => 'yes',
+                'desc_tip' => true
+            ],
+            'liquido_split' => [
+                'title'   => 'Liquido/Bruno',
+                'label'   => 'Por valor Liquido',
+                'type'    => 'checkbox',
+                'description'  => "Ao marcar a opção o o valor sera dividido pelo seu total liquido caso contrario sera pelo valor bruno",
+                'default' => 'yes',
+                'desc_tip' => true
+            ],
+            'percentual_split' => [
+                'title'       => "Percentual de Divisão",
+                'type'        => 'text',
+                'description' => "",
+                'default'     => '',
+                'desc_tip'    => true,
+            ],
+            'valor_split' => [
+                'title'       => "Valor de Divisão",
+                'type'        => 'text',
+                'description' => "",
+                'default'     => '',
+                'desc_tip'    => true,
+            ],
+            'id_split' => [
+                'title'       => "ID do Recebedor",
+                'type'        => 'text',
+                'description' => "",
+                'default'     => '',
+                'desc_tip'    => true,
+            ],
            
         ];
     }

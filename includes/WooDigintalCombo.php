@@ -18,26 +18,15 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 		$this->id_vendedor         = $this->get_option( 'SELLER_ID' );
 		$this->pagar_como          = $this->get_option( 'pagar_como' );
 		$this->vencimento_boleto   = $this->get_option( 'vencimento_boleto' );
-		$this->supports            = [
-			'products', 
-			'subscriptions',
-			'subscription_cancellation', 
-			'subscription_suspension', 
-			'subscription_reactivation',
-			'subscription_amount_changes',
-			'subscription_date_changes',
-			'subscription_payment_method_change',
-			'subscription_payment_method_change_customer',
-			'subscription_payment_method_change_admin',
-			'multiple_subscriptions',
-		];
-		add_action( 'woocommerce_update_options_payment_gateways_'. $this->id, [ __CLASS__, 'process_admin_options'] );		
+		$this->mode_dev            = $this->get_option( 'mode_dev' );
+
+		add_action( 'woocommerce_update_options_payment_gateways_'. $this->id, [ $this, 'process_admin_options'] );		
 	}
 	
 	public function init_form_fields() 
 	{	  
 		$this->form_fields = apply_filters( 'wc_offline_form_fields', DigitalFig::fields() );
-	}
+	}	
 
 	public function process_payment( $pedido_id ) 
 	{	
@@ -45,16 +34,30 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 		$pedido           = new WC_Order( $pedido_id );		
 		$tipo_transacao   = isset( $_POST["type_pagamento"] ) ? $_POST["type_pagamento"]: "cartao_credito" ;
 		$validar_trasacao = false;
-		if( $tipo_transacao ==  "cartao_credito" ) {
-			$validar_trasacao = $this->cartao_credito( $pedido );
-		} else {
-			$validar_trasacao = $this->boleto( $pedido );
+
+		switch ( $tipo_transacao ) 
+		{
+			case 'cartao_debito':
+				$validar_trasacao = $this->cartao_debito( $pedido );
+				break;
+				
+			case 'cartao_credito':
+				$validar_trasacao = $this->cartao_credito( $pedido );
+				break;
+				
+			case 'boleto':
+			default:
+				$validar_trasacao = $this->boleto( $pedido );
+				break;
 		}
+
 		if( $validar_trasacao ) 
 		{
 			$pedido->update_status( 'on-hold', 'Aguardando Confirmação de pagamentp' );		
 			$woocommerce->cart->empty_cart();
 		}
+
+
 		return array(
 			'result' 	=> $validar_trasacao ? 'success' : 'error',
 			'redirect'	=> $this->get_return_url( $pedido )
@@ -119,10 +122,9 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 			$this->debug( $boleto, true );
 		}
 		$this->debug( $boleto , true );	
-		// return false;
 		return $validacao;
-	}	
-	public function cartao_credito( $pedido )
+	}
+	public function cartao_credito( $pedido, $venda_debito = false )
 	{
 		$gateway    = new Gateway;
 		$mes_ano    = explode( '/', $_POST["card_valid"] );
@@ -132,27 +134,35 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 			"cvv"    => $_POST["card_cvv"] ?? "",
 			"mes"    => $mes_ano[0] ?? "",
 			"ano"    => $mes_ano[1] ?? "",
-		];		
-		$pagar_com_cartao = $gateway->transfCard( 
+		];
+		$pagar_com_cartao = $gateway->transCard(
 			[
-				"source" => [
-					"usage" => "single_use",
-					"card"  => [
-						"holder_name"      => $cartao["nome"],
-						"expiration_month" => $cartao["mes"],
-						"expiration_year"  => $cartao["ano"],
-						"card_number"      => $cartao["numero"],
-						"security_code"    => $cartao["cvv"]
-					],
-					"currency" => "BRL",
-					"type"     => "card",
-					"amount"   => str_replace( '.', '', $pedido->total )
-				],
 				"amount"       => str_replace( '.', '', $pedido->total ),
-				"currency"     => "BRL",
-				"description"  => "Venda",
+				"payment_type" => $venda_debito ? "debit" :"credit",
+				'customerID'   => '',
 				"on_behalf_of" => $this->id_vendedor,
-				"payment_type" => "credit"
+				"card"  => [
+					"holder_name"      => $cartao["nome"],
+					"expiration_month" => $cartao["mes"],
+					"expiration_year"  => $cartao["ano"],
+					"card_number"      => $cartao["numero"],
+					"security_code"    => $cartao["cvv"]
+				],
+				"customer" => [
+					"first_name"  => $pedido->get_billing_first_name(), 
+					"last_name"   => $pedido->get_billing_last_name(),
+					"taxpayer_id" => $pedido->get_meta('_billing_cpf'),
+					"email"       => $pedido->get_billing_email(), 
+					"address" => [
+						"line1"        => $pedido->get_billing_address_1(), 
+						"line2"        => $pedido->get_billing_address_2(), 
+						"neighborhood" => $pedido->get_meta('_billing_bairro'), 
+						"city"         => $pedido->get_billing_city(), 
+						"state"        => $pedido->get_billing_state(), 
+						"postal_code"  => $pedido->get_billing_postcode(), 
+						"country_code" => "BR" 
+					]
+				]
 			]
 		);
 		file_put_contents( __DIR__ . "/../log/_card-" . Date( 'Y-m-d-H-i' ) . ".json", json_encode( $pagar_com_cartao ) );
@@ -164,6 +174,10 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 			$pedido->add_order_note(  "TOKEN PEDIDO: $ID", 'woothemes' );
 		}
 		return $validacao;
+	}
+	public function cartao_debito( $pedido ) 
+	{
+		$this->cartao_credito( $pedido, true );
 	}
 	public function additionalDays( string $day ) 
 	{

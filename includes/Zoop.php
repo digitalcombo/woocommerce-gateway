@@ -8,22 +8,24 @@ class Zoop extends Curl {
     function __construct() {
         $this->idMarketplace = WC_DC_FIG::ID_MKT_PLACE;
         $this->keyZpk        = WC_DC_FIG::ZPK;
+        // $this->idMarketplace = '83824523b30a4f44a6231c46319c8c12';
+        // $this->keyZpk        = 'zpk_test_lcyUVmcv7ISdesnZe4m3w5eN';
         $this->api           = 'https://api.zoop.ws/';
     }
 
-    public function transactions( $arr, $url, $version = false ) {
+    public function transactions( $arr, $url, $version = false, $type = false ) {
         $version = $version  ?? '' ? 'v2' : 'v1';
         $fullUrl = "{$this->api}{$version}/marketplaces/{$this->idMarketplace}/{$url}";
         if( $url == 'subscriptions' ) { $this->post( $fullUrl, $arr, [], $this->keyZpk, true ); }
 
-        return $this->post( $fullUrl, $arr, [], $this->keyZpk );
+        return $this->post( $fullUrl, $arr, [], $this->keyZpk, $type );
     }
 
-    public function boletoOrder( $info, $customer, $idSeller ) {
-        $info['on_behalf_of'] = $idSeller;
+    public function boletoOrder( $info, $customer ) {
+        $info['on_behalf_of'] = $this->idSeller;
         $info['customer']     = $customer;
         $info['payment_type'] = "boleto";
-        $info['logo']         = "https://i.imgur.com/lzVI0zH.png";
+
         return $this->transactions( $info, 'transactions' );
     }
 }

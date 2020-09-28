@@ -40,3 +40,10 @@ if( ! class_exists( 'WC_DC_FIG' ) ) :
 	include_once __DIR__ . "/includes/WC_DC_FIG.php";
 	add_action( 'plugins_loaded', [ "WC_DC_FIG", "init" ] );
 endif;
+
+// comprador_id_zoop
+// comprador_id_card_zoop
+
+update_post_meta( 301, 'comprador_id_zoop', '302' );
+$id = get_post_meta( 302, 'comprador_id_zoop', true );
+var_dump( $id );

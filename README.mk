@@ -13,3 +13,4 @@ https://docs.woocommerce.com/document/subscriptions/develop/data-structure/#sect
 - [x] CSS card Mobile
 - [x] checkou add btn pagar cartão de debito
 - [ ] cartão de debito não autorizado
+- [ ] wp_fig define( 'DISABLE_WP_CRON', true );

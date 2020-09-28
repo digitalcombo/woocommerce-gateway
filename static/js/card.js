@@ -62,7 +62,7 @@ globalThis.card_cvv = () =>
 
 globalThis.opcao_pagamento = tipo => {
     let $card_digital_combo = document.querySelector( "#card_digital_combo" )
-    if( tipo == "cartao_credito" ) {
+    if( tipo == "cartao_credito" || tipo == "cartao_debito" ) {
         $card_digital_combo.removeAttribute( 'hidden' )
     } else {
         $card_digital_combo.setAttribute( 'hidden', '' )    
