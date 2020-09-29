@@ -21,11 +21,12 @@ class Zoop extends Curl {
         return $this->post( $fullUrl, $arr, [], $this->keyZpk, $type );
     }
 
-    public function boletoOrder( $info, $customer ) {
-        $info['on_behalf_of'] = $this->idSeller;
+    public function boletoOrder( $info, $customer, $idVendedor ) {
+        unset($info['customerID']);
+        $info['on_behalf_of'] = $idVendedor;
         $info['customer']     = $customer;
         $info['payment_type'] = "boleto";
 
-        return $this->transactions( $info, 'transactions' );
+        return $this->transactions( $info, 'transactions', false, true );
     }
 }

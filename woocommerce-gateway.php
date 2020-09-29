@@ -44,6 +44,13 @@ endif;
 // comprador_id_zoop
 // comprador_id_card_zoop
 
-update_post_meta( 301, 'comprador_id_zoop', '302' );
-$id = get_post_meta( 302, 'comprador_id_zoop', true );
-var_dump( $id );
+
+// add_action( 'plugins_loaded', function() {
+add_action( 'woocommerce_after_cart_contents', function() {
+	// update_post_meta( 301, 'comprador_id_zoop', '302' );
+	// $id = get_post_meta( 302, 'comprador_id_zoop', true );
+	// var_dump( $id );
+	// $app = new WooDigintalCombo;
+	// $app->products_recorrente( 83 );
+
+} );

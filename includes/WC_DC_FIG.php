@@ -190,13 +190,13 @@ final class WC_DC_FIG
         woocommerce_wp_select(
             array(
                 'id'          => '_recorrente',
-                'label'       =>'Tipo Contratacao',
+                'label'       =>'Tipo Contratacão',
                 'value'       => $product_object->get_meta( '_recorrente', true ),
                 'options' => [
-                    '1'  => 'Mensal',
-                    '3'  => 'Trimestral',
-                    '6'  => 'Semestral',
-                    '12' => 'Anual'
+                    "daily"   => "Diária",
+                    "weekly"  => "Semanal",
+                    "monthly" => "Mensal",
+                    "annualy" => "Anual",
                 ]
             )
         );

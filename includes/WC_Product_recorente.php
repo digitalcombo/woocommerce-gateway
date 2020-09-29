@@ -16,10 +16,10 @@ class WC_Product_recorrente extends WC_Product_Simple
     public function tipos_recorrencia( $quant_mes )
     {
         $tipos = [
-            "1"  => "Mensal",
-            "3"  => "Trimestral",
-            "6"  => "Semestral",
-            "12" => "Anual",
+            "daily"   => "Diária",
+            "weekly"  => "Semanal",
+            "monthly" => "Mensal",
+            "annualy" => "Anual",
         ];
         return $tipos[ $quant_mes ];
     }

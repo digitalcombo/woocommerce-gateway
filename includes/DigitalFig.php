@@ -95,6 +95,20 @@ final class DigitalFig
                 'default'     => '',
                 'desc_tip'    => true,
             ],
+            'dias_carencia' => [
+                'title'       => "Dias de Carência",
+                'type'        => 'text',
+                'description' => "",
+                'default'     => '0',
+                'desc_tip'    => true,
+            ],
+            'periodo_tolerancia' => [
+                'title'       => "Período de Tolerância",
+                'type'        => 'text',
+                'description' => "",
+                'default'     => '0',
+                'desc_tip'    => true,
+            ],
            
         ];
     }

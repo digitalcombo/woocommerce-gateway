@@ -3,16 +3,18 @@
 class Gateway extends Zoop {
     public function createPlan( $plan ) { return json_decode($this->transactions( $plan, 'plans', true )); }
 
-    public function customer( $buyer ) { return json_decode($this->transactions( $buyer, 'buyers' )); }
+    public function customer( $buyer ) { return json_decode($this->transactions( $buyer, 'buyers', false, true )); }
 
     public function tokenCard( $card ) { return json_decode($this->transactions( $card, 'cards/tokens', false, true )); }
 
     private function createUserToken( $card, $customer ) {
         $customer  = $this->customer($customer);
-        $card      = $this->tokenCard($card);
-    
-        return $this->card($card->id, $customer->id);
+        $card      = $this->tokenCard($card);    
+        $result    = $this->card($card->id, $customer->id);
+
+        return $result->customer;
     }
+
 
     public function transCard( $infoBuyer, $splitRules = [] ) {
         $transf = [
@@ -27,9 +29,11 @@ class Gateway extends Zoop {
         return json_decode($this->transactions( $transf, 'transactions', false, true ));
     }
 
-    public function boleto( $buyer, $info ) {
-        $customer = $this->customer($buyer);
-        return json_decode($this->boletoOrder( $info, $customer->id ));
+    public function boleto( $buyer, $info, $idVendedor ) {
+        if( empty($info['customerID']) ) {
+            $customer = $this->customer($buyer);
+        }
+        return json_decode( $this->boletoOrder( $info, empty( $info['customerID']) ? $customer->id : $info['customerID'], $idVendedor ) );
     }
 
     public function card( $cardID, $customerID ) {
