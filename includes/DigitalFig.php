@@ -66,11 +66,19 @@ final class DigitalFig
                 'default' => 'yes',
                 'desc_tip' => true
             ],
+            'split' => [
+                'title'   => 'Divisão',
+                'label'   => 'Ativar a divisão de pagamento',
+                'type'    => 'checkbox',
+                'description'  => "",
+                'default' => '',
+                'desc_tip' => false
+            ],
             'liquido_split' => [
                 'title'   => 'Liquido/Bruno',
                 'label'   => 'Por valor Liquido',
                 'type'    => 'checkbox',
-                'description'  => "Ao marcar a opção o o valor sera dividido pelo seu total liquido caso contrario sera pelo valor bruno",
+                'description'  => "Ao marcar a opção o o valor sera dividido pelo seu total liquido caso contrario sera pelo valor bruto",
                 'default' => 'yes',
                 'desc_tip' => true
             ],

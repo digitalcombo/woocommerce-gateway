@@ -28,6 +28,14 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 		$this->plan_amount         = 0;
 
 
+		$this->split           = $this->get_option( 'split' );
+		$this->split_prezuiso  = $this->get_option( 'prezuiso_split' );
+		$this->split_liquido   = $this->get_option( 'liquido_split' );
+		$this->split_percent   = $this->get_option( 'percentual_split' );
+		$this->split_valor     = $this->get_option( 'valor_split' );
+		$this->split_seller    = $this->get_option( 'id_split' );
+
+
 
 		add_action( 'woocommerce_update_options_payment_gateways_'. $this->id, [ $this, 'process_admin_options'] );		
 	}
@@ -158,6 +166,22 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 		return get_post_meta( $idUser, "customerID_$venda_type", true );
 	}
 
+	public function getSplitRules() 
+	{
+		if( !empty( $this->split ) ) :
+			return [
+				'split_rules' => [
+					"recipient"             => $this->split_seller,
+					"liable"                => $this->split_prezuiso,
+					"charge_processing_fee" => $this->split_liquido,
+					"percentage"            => $this->split_percent,
+					"amount"                => $this->split_valor
+				]
+			];
+		endif;
+		return [];   
+	}
+
 	public function cartao_credito( $pedido, $venda_type = "credit" )
 	{
 		$gateway    = new Gateway;
@@ -169,7 +193,8 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 			"mes"    => $mes_ano[0] ?? "",
 			"ano"    => $mes_ano[1] ?? "",
 		];
-    
+		
+		$splitRules = $this->getSplitRules();
     
 		$pagar_com_cartao = $gateway->transCard(
 			[
@@ -199,7 +224,7 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 						"country_code" => "BR" 
 					]
 				]
-			]
+			], $splitRules
 		);
 		if( empty( $this->getCustomerID() ) )
 		{
