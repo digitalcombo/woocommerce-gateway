@@ -135,6 +135,7 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 			]
 		];
 		$compra = [
+			'on_behalf_of'	 => $this->id_vendedor,
 			"customerID"     => $this->getCustomerID( 'boleto' ),
 			"amount"         => str_replace( '.', '', $pedido->total ),
 			"currency"       => "BRL",
@@ -168,18 +169,20 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 
 	public function getSplitRules() 
 	{
-		if( !empty( $this->split ) ) :
+		// if( !empty( $this->split ) ) :
 			return [
-				'split_rules' => [
-					"recipient"             => $this->split_seller,
-					"liable"                => $this->split_prezuiso,
-					"charge_processing_fee" => $this->split_liquido,
-					"percentage"            => $this->split_percent,
-					"amount"                => $this->split_valor
+				'split_rules' =>[ 
+					[
+						"recipient"             => $this->split_seller,
+						"liable"                => (int) $this->split_prezuiso,
+						"charge_processing_fee" => (int) $this->split_liquido,
+						"percentage"            => (int) $this->split_percent,
+						"amount"                => (int) $this->split_valor
+					]
 				]
 			];
-		endif;
-		return [];   
+		// endif;
+		// return [];
 	}
 
 	public function cartao_credito( $pedido, $venda_type = "credit" )
@@ -257,10 +260,10 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 		$plan    = [
 			"frequency" 	   => $this->plan_frequency,
 			"interval"         => 1,
-			"payment_methods"  => ['credit'],
+			"payment_methods"  => ["credit"],
 			"amount"		   => $this->plan_amount,
-			"description" 	   => "Plano Mensal Especial Ouro",
-			"name"             => "Plano Ouro",
+			"description" 	   => "Plano Mensal Especial Silver",
+			"name"             => "Plano Silver",
 			"grace_period"     => $this->plan_grace ,
 			"tolerance_period" => $this->plan_tolerance ,
 			"currency"         => "BRL",
@@ -301,11 +304,13 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 			"card_number"      => $_POST["card_number"] ?? ""
 		];
 		$resposta = $gateway->subscriptions( [ 
-			'customerID' => '', 
-			'idPlan' 	 => $this->plan_id, 
-			'card'       => $card,
-			'customer'   => $custome, 
-			'dueDate'    => '2021-01-26'
+			'customerID'  => '',
+			'paymentType' => $pedido_type,
+			'idPlan' 	  => $this->plan_id,
+			'idVendedor'  => $this->id_vendedor,
+			'card'        => $card,
+			'customer'    => $custome, 
+			'dueDate'     => '2021-01-26'
 		]); 
 		$this->debug( $resposta, true, 'inscricao--'  );
 		return $resposta;

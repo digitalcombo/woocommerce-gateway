@@ -3,11 +3,11 @@
     <div>
         <?php if( $modo_de_pagamento == "cartao_credito_e_boleto" ): ?>
             <div class="escolha_tipo">
-                <input type="radio" oninput="globalThis.opcao_pagamento( this.value )" name="type_pagamento" value="cartao_debito" id="c_3" checked  hidden>
+                <!-- <input type="radio" oninput="globalThis.opcao_pagamento( this.value )" name="type_pagamento" value="cartao_debito" id="c_3" checked  hidden>
                 <label for="c_3">
                     <img src="<?= BASE_DCP ?>/static/images/icone/card.svg" alt="card">
                     <small>Debito</small>
-                </label>
+                </label> -->
                 <input type="radio" oninput="globalThis.opcao_pagamento( this.value )" name="type_pagamento" value="cartao_credito" id="c_1" checked  hidden>
                 <label for="c_1">
                     <img src="<?= BASE_DCP ?>/static/images/icone/card.svg" alt="card">
@@ -23,11 +23,11 @@
         <?php else: ?>
             <?php if( $modo_de_pagamento == "cartao_de_credito" ): ?>
                 <div class="escolha_tipo">
-                    <input type="radio" oninput="globalThis.opcao_pagamento( this.value )" name="type_pagamento" value="cartao_debito" id="c_3" checked  hidden>
+                    <!-- <input type="radio" oninput="globalThis.opcao_pagamento( this.value )" name="type_pagamento" value="cartao_debito" id="c_3" checked  hidden>
                     <label for="c_3">
                         <img src="<?= BASE_DCP ?>/static/images/icone/card.svg" alt="card">
                         <small>Debito</small>
-                    </label>
+                    </label> -->
                     <input type="radio" oninput="globalThis.opcao_pagamento( this.value )" name="type_pagamento" value="cartao_credito" id="c_1" checked  hidden>
                     <label for="c_1">
                         <img src="<?= BASE_DCP ?>/static/images/icone/card.svg" alt="card">
@@ -72,20 +72,20 @@
     <div class="card_form" >
         <div>
             <label for="">Número<b>*</b></label>
-            <input type="text" value="4539003370725497" name="card_number" id="iNumber" oninput="globalThis.card_number()" placeholder="0000 0000 0000 0000" require>
+            <input type="text" value="" name="card_number" id="iNumber" oninput="globalThis.card_number()" placeholder="0000 0000 0000 0000" require>
         </div>
         <div>
             <label for="">Nome<b>*</b></label>
-            <input type="text" value="JOAO SILVA" name="card_name" id="iName" placeholder="DIGITA AQUI SEU NOME" oninput="globalThis.card_name()" require>
+            <input type="text" value="" name="card_name" id="iName" placeholder="DIGITA AQUI SEU NOME" oninput="globalThis.card_name()" require>
         </div>
         <div class="card_grid_cvv_valid">
             <div>
                 <label for="">Data de Validade<b>*</b></label>
-                <input type="text" name="card_valid" value="09/2027" id="iValid" placeholder="MM/AA" oninput="globalThis.card_valid()" require>
+                <input type="text" name="card_valid" value="" id="iValid" placeholder="MM/AA" oninput="globalThis.card_valid()" require>
             </div>
             <div>
                 <label for="">CVV<b>*</b></label>
-                <input type="text" value="123" name="card_cvv" id="iCvv" placeholder="123" oninput="globalThis.card_cvv()" require>
+                <input type="text" value="" name="card_cvv" id="iCvv" placeholder="123" oninput="globalThis.card_cvv()" require>
             </div>
         </div>
     </div>

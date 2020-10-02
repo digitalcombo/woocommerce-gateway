@@ -27,15 +27,15 @@ final class DigitalFig
             ],
             'vencimento_boleto' => [
                 'title'       => 'Vencimento Boleto',
-                'type'        => 'number',
-                'description' => 'Coloque Aqui a quantidade de de dias adicionar a vencimento do boleto',
+                'type'        => "number",
+                'description' => 'Coloque aqui a quantidade de dias adicionais para o vencimento do boleto',
                 'default'     => 0,
                 'desc_tip'    => true,
             ],
             'SELLER_ID' => [
                 'title'       => "ID de Vendedor",
                 'type'        => 'text',
-                'description' => "insira aqui sei ID de vendedor",
+                'description' => "insira aqui seu ID de vendedor",
                 'default'     => '',
                 'desc_tip'    => true,
             ],
@@ -45,26 +45,10 @@ final class DigitalFig
                 'label'   => "Escolha seu meio de pagamento",
                 'default' => 'cartao_credito_e_boleto',
                 'options' => [
-                    "cartao_credito_e_boleto" => "Cartão Credito e Boleto",
-                    "cartao_de_credito" => "Somente via Cartão Credito",
+                    "cartao_credito_e_boleto" => "Cartão Crédito e Boleto",
+                    "cartao_de_credito" => "Somente via Cartão Crédito",
                     "boleto" => "Somente via Boleto",
                 ]
-            ],
-            'mode_dev' => [
-                'title'   => 'Ativar/Desativar',
-                'label'   => 'Modo de Teste',
-                'type'    => 'checkbox',
-                'description'  => "Ao marcar a opção o modo de teste sera ativado",
-                'default' => 'yes',
-                'desc_tip' => true
-            ],
-            'prezuiso_split' => [
-                'title'   => 'Arcar/Prezuiso',
-                'label'   => 'Recebedor arcar com prejuiso caso extorno',
-                'type'    => 'checkbox',
-                'description'  => "Ao marcar a opção o recebidor arcara com o prejuiso em caso extorno",
-                'default' => 'yes',
-                'desc_tip' => true
             ],
             'split' => [
                 'title'   => 'Divisão',
@@ -74,26 +58,34 @@ final class DigitalFig
                 'default' => '',
                 'desc_tip' => false
             ],
-            'liquido_split' => [
-                'title'   => 'Liquido/Bruno',
-                'label'   => 'Por valor Liquido',
+            'prezuiso_split' => [
+                'title'   => 'Arcar/Prejuízo',
+                'label'   => 'Recebedor arcar com prejuiso caso extorno',
                 'type'    => 'checkbox',
-                'description'  => "Ao marcar a opção o o valor sera dividido pelo seu total liquido caso contrario sera pelo valor bruto",
+                'description'  => "Ao marcar a opção o vendendor arcará com o prejuízo em caso extorno",
+                'default' => 'yes',
+                'desc_tip' => true
+            ],            
+            'liquido_split' => [
+                'title'   => 'Líquido/Bruto',
+                'label'   => 'Por valor Líquido',
+                'type'    => 'checkbox',
+                'description'  => "Ao marcar a opção o valor será dividido pelo seu total líquido, caso contrário, será pelo valor bruto",
                 'default' => 'yes',
                 'desc_tip' => true
             ],
             'percentual_split' => [
                 'title'       => "Percentual de Divisão",
-                'type'        => 'text',
+                'type'        => "number",
                 'description' => "",
-                'default'     => '',
+                'default'     => 0,
                 'desc_tip'    => true,
             ],
             'valor_split' => [
                 'title'       => "Valor de Divisão",
-                'type'        => 'text',
+                'type'        => "number",
                 'description' => "",
-                'default'     => '',
+                'default'     => 0,
                 'desc_tip'    => true,
             ],
             'id_split' => [
@@ -105,16 +97,16 @@ final class DigitalFig
             ],
             'dias_carencia' => [
                 'title'       => "Dias de Carência",
-                'type'        => 'text',
+                'type'        => "number",
                 'description' => "",
-                'default'     => '0',
+                'default'     => 0,
                 'desc_tip'    => true,
             ],
             'periodo_tolerancia' => [
                 'title'       => "Período de Tolerância",
-                'type'        => 'text',
+                'type'        => "number",
                 'description' => "",
-                'default'     => '0',
+                'default'     => 0,
                 'desc_tip'    => true,
             ],
            

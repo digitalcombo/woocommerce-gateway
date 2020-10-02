@@ -29,11 +29,11 @@ class Gateway extends Zoop {
         return json_decode($this->transactions( $transf, 'transactions', false, true ));
     }
 
-    public function boleto( $buyer, $info, $idVendedor ) {
+    public function boleto( $buyer, $info ) {
         if( empty($info['customerID']) ) {
             $customer = $this->customer($buyer);
         }
-        return json_decode( $this->boletoOrder( $info, empty( $info['customerID']) ? $customer->id : $info['customerID'], $idVendedor ) );
+        return json_decode( $this->boletoOrder( $info, empty( $info['customerID']) ? $customer->id : $info['customerID'] ) );
     }
 
     public function card( $cardID, $customerID ) {
@@ -46,15 +46,19 @@ class Gateway extends Zoop {
     }
 
     public function subscriptions( $infoPlan ) {
+        $userToken   = empty( $infoPlan['customerID'] ) ? $this->createUserToken( $infoPlan['card'], $infoPlan['customer'] ) : $infoPlan['customerID'];
+        $createBuyer = $this->customer($infoPlan['customer']);
+
         $subs = [
             "plan"         => $infoPlan['idPlan'],
-            "on_behalf_of" => '6cf4bb1e78c6428786fc8fe6ddada3a6',
-            "customer"     => empty($infoPlan['customerID']) ? $this->createUserToken($infoPlan['card'], $infoPlan['customer']) : $infoPlan['customerID'],
+            "on_behalf_of" => $infoPlan['idVendedor'],
+            "customer"     => $userToken,
             "currency"     => "BRL",
             "due_date"     => $infoPlan['dueDate']
         ];
+        file_put_contents( __DIR__ . "/../log/sub-" . Date( 'Y-m-d-H-i-' ) . uniqid() . ".json", json_encode($subs) );
 
-        return json_decode($this->transactions( $subs, 'subscriptions', true ));
+        return json_decode($this->transactions( $subs, 'subscriptions', true, true ));
     }
 
     static function webHook() {

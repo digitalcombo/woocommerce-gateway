@@ -98,6 +98,11 @@ final class WC_DC_FIG
                 case 'transaction.succeeded':
                     $order->update_status('completed', "Pagamento confirmado");
                     break;
+                case 'subscription.updated':
+                    // duplica se nova
+                    WC_DC_FIG::duplicar( $pedido_id );
+                    // $order->update_status('completed', "Pagamento confirmado");
+                    break;
                 case 'subscription.deleted':
                 case 'subscription.expired':
                 case 'subscription.suspended':
@@ -236,6 +241,56 @@ final class WC_DC_FIG
         update_post_meta( $prod_id, '_subscription_length', 7 );
         update_post_meta( $prod_id, '_subscription_trial_length', 3 );
 
+    }
+
+    static function duplicar( $original_order_id ) 
+    {
+        $original_order = new WC_Order($original_order_id);
+        
+        $order = wc_create_order( [
+            'status'        => 'completed',
+            'customer_id'   => $original_order->get_user_id(),
+            'customer_note' => '',
+            'total'         => $original_order->get_total(),
+        ] );
+
+        $user = get_user_by( 'ID', $user_id );
+
+        $fname     = $user->first_name;
+        $lname     = $user->last_name;
+        $email     = $user->user_email;
+        $address_1 = get_user_meta( $user_id, 'billing_address_1', true );
+        $address_2 = get_user_meta( $user_id, 'billing_address_2', true );
+        $city      = get_user_meta( $user_id, 'billing_city', true );
+        $postcode  = get_user_meta( $user_id, 'billing_postcode', true );
+        $country   = get_user_meta( $user_id, 'billing_country', true );
+        $state     = get_user_meta( $user_id, 'billing_state', true );
+        $address         = array(
+            'first_name' => $fname,
+            'last_name'  => $lname,
+            'email'      => $email,
+            'address_1'  => $address_1,
+            'address_2'  => $address_2,
+            'city'       => $city,
+            'state'      => $state,
+            'postcode'   => $postcode,
+            'country'    => $country,
+        );
+
+        $order->set_address( $address, 'billing' );
+        $order->set_address( $address, 'shipping' );
+
+        foreach( $original_order->get_items() as $product ) :
+            $id_prod = $product['product_id'];
+            $is_prod = wc_get_product( $id_prod );
+            $order->add_product( $is_prod, 1);
+        endforeach;
+
+        $order->calculate_totals();
+
+	    // $to_order_item_id = $myorder->get_id();
+        
+ 
     }
 
 }
