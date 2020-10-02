@@ -69,7 +69,7 @@ class Gateway extends Zoop {
             "type" => $request->type,
             "id"   => $request->payload->object->payment_method->id
         ];
-        return $response;        
+        return $response;
     }    
 
 }
