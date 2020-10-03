@@ -2,7 +2,7 @@
 
 class Curl {
     public function post($url, $post = NULL, array $options = [], $basicUser, $type = false) {
-        $type = $type  ?? '' ? http_build_query($post) : json_encode($post);
+        $type = $type  ? http_build_query($post) : json_encode($post);
         $defaults = array(
             CURLOPT_POST           => 1,
             CURLOPT_HEADER         => 0,

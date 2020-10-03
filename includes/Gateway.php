@@ -9,7 +9,7 @@ class Gateway extends Zoop {
 
     private function createUserToken( $card, $customer ) {
         $customer  = $this->customer($customer);
-        $card      = $this->tokenCard($card);    
+        $card      = $this->tokenCard($card);
         $result    = $this->card($card->id, $customer->id);
 
         return $result->customer;
@@ -29,11 +29,12 @@ class Gateway extends Zoop {
         return json_decode($this->transactions( $transf, 'transactions', false, true ));
     }
 
-    public function boleto( $buyer, $info ) {
-        if( empty($info['customerID']) ) {
-            $customer = $this->customer($buyer);
-        }
-        return json_decode( $this->boletoOrder( $info, empty( $info['customerID']) ? $customer->id : $info['customerID'] ) );
+    public function boleto( $buyer, $compra, $splitRules = [] ) {
+        if( empty($buyer['customerID']) ) { $customer = $this->customer($buyer); }
+        $compra = !empty($splitRules) ? array_merge($compra, $splitRules) : $compra;
+        // file_put_contents( __DIR__ . "/../log/boleto-" . Date( 'Y-m-d-H-i-' ) . uniqid() . ".json", json_encode($compra) );
+
+        return json_decode( $this->boletoOrder( $compra, empty( $compra['customerID']) ? $customer->id : $compra['customerID'] ) );
     }
 
     public function card( $cardID, $customerID ) {
@@ -46,19 +47,16 @@ class Gateway extends Zoop {
     }
 
     public function subscriptions( $infoPlan ) {
-        $userToken   = empty( $infoPlan['customerID'] ) ? $this->createUserToken( $infoPlan['card'], $infoPlan['customer'] ) : $infoPlan['customerID'];
-        $createBuyer = $this->customer($infoPlan['customer']);
-
         $subs = [
             "plan"         => $infoPlan['idPlan'],
             "on_behalf_of" => $infoPlan['idVendedor'],
-            "customer"     => $userToken,
+            "customer"     => empty( $infoPlan['customerID'] ) ? $this->createUserToken( $infoPlan['card'], $infoPlan['customer'] ) : $infoPlan['customerID'],
             "currency"     => "BRL",
             "due_date"     => $infoPlan['dueDate']
         ];
-        file_put_contents( __DIR__ . "/../log/sub-" . Date( 'Y-m-d-H-i-' ) . uniqid() . ".json", json_encode($subs) );
+        // file_put_contents( __DIR__ . "/../log/sub-" . Date( 'Y-m-d-H-i-' ) . uniqid() . ".json", json_encode($subs) );
 
-        return json_decode($this->transactions( $subs, 'subscriptions', true, true ));
+        return json_decode($this->transactions( $subs, 'subscriptions', true, false ));
     }
 
     static function webHook() {

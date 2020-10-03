@@ -48,16 +48,31 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 	public function products_recorrente( $pedido_id, $pedido_type = 'credit' )
 	{
 		$pedido = new WC_Order( $pedido_id );
+		$resposta = null;
 		foreach( $pedido->get_items() as $product ) {
 			$recorrente = get_post_meta( $product["product_id"] , '_recorrente', true );
 			if( !empty( $recorrente ) ) {
 				$this->plan_frequency = $recorrente;
 				$this->plan_amount    = $product['subtotal'];
 				$this->new_plan();
-				$this->new_sub( $pedido_id, $pedido_type );
+				$resposta = $this->new_sub( $pedido_id, $pedido_type );
 			} 
              
-        }
+		}
+		return $resposta;
+
+	}
+
+	public function has_products_recorrente( $pedido_id )
+	{
+		$pedido = new WC_Order( $pedido_id );
+		foreach( $pedido->get_items() as $product ) {
+			$recorrente = get_post_meta( $product["product_id"] , '_recorrente', true );
+			if( !empty( $recorrente ) ) {
+				return true;
+			}
+		}
+		return false;
 
 	}
 
@@ -67,6 +82,7 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 		$pedido           = new WC_Order( $pedido_id );		
 		$tipo_transacao   = isset( $_POST["type_pagamento"] ) ? $_POST["type_pagamento"]: "cartao_credito" ;
 		$validar_trasacao = false;
+		$has_recorrente   = $this->has_products_recorrente( $pedido_id );
 
 		switch ( $tipo_transacao ) 
 		{
@@ -76,14 +92,17 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 				break;
 				
 			case 'cartao_credito':
-				$validar_trasacao = $this->cartao_credito( $pedido );
-				$this->products_recorrente( $pedido_id, 'credit' );
+				if( $has_recorrente ) {
+					$validar_trasacao = $this->products_recorrente( $pedido_id, 'credit' );
+				} else {
+					$validar_trasacao = $this->cartao_credito( $pedido );
+				}
 				break;
 				
 			case 'boleto':
 			default:
 				$validar_trasacao = $this->boleto( $pedido );
-				$this->products_recorrente( $pedido_id, 'boleto' );
+				// $this->products_recorrente( $pedido_id, 'boleto' );
 				break;
 		}
 
@@ -145,7 +164,8 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 				"expiration_date" => $this->additionalDays( $this->vencimento_boleto )
 			]
 		];
-		$boleto     = $gateway->boleto( $usuario, $compra, $this->id_vendedor );
+		$splitRules = $this->getSplitRules();
+		$boleto     = $gateway->boleto( $usuario, $compra, $splitRules );
 		$validacao  = isset( $boleto->error ) ? false : true;
 		if ( $validacao )
 		{
@@ -155,7 +175,6 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 			$pedido->add_order_note(  "CODIGO DE BARRAS: $CODE", 'woothemes'  );
 			$pedido->add_order_note(  "TOKEN PEDIDO: $ID", 'woothemes'  );
 			$pedido->add_order_note(  "URL BOLETO: $BOLETO", 'woothemes'  );
-			$this->debug( $boleto, true );
 		}
 		$this->debug( $boleto , true );	
 		return $validacao;

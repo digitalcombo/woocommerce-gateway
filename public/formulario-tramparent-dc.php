@@ -72,20 +72,20 @@
     <div class="card_form" >
         <div>
             <label for="">Número<b>*</b></label>
-            <input type="text" value="" name="card_number" id="iNumber" oninput="globalThis.card_number()" placeholder="0000 0000 0000 0000" require>
+            <input type="text" value="5201561050024014" name="card_number" id="iNumber" oninput="globalThis.card_number()" placeholder="0000 0000 0000 0000" require>
         </div>
         <div>
             <label for="">Nome<b>*</b></label>
-            <input type="text" value="" name="card_name" id="iName" placeholder="DIGITA AQUI SEU NOME" oninput="globalThis.card_name()" require>
+            <input type="text" value="João Silva" name="card_name" id="iName" placeholder="DIGITA AQUI SEU NOME" oninput="globalThis.card_name()" require>
         </div>
         <div class="card_grid_cvv_valid">
             <div>
                 <label for="">Data de Validade<b>*</b></label>
-                <input type="text" name="card_valid" value="" id="iValid" placeholder="MM/AA" oninput="globalThis.card_valid()" require>
+                <input type="text" name="card_valid" value="03/18" id="iValid" placeholder="MM/AA" oninput="globalThis.card_valid()" require>
             </div>
             <div>
                 <label for="">CVV<b>*</b></label>
-                <input type="text" value="" name="card_cvv" id="iCvv" placeholder="123" oninput="globalThis.card_cvv()" require>
+                <input type="text" value="123" name="card_cvv" id="iCvv" placeholder="123" oninput="globalThis.card_cvv()" require>
             </div>
         </div>
     </div>
