@@ -189,16 +189,36 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 	public function getSplitRules() 
 	{
 		// if( !empty( $this->split ) ) :
+			$splits = [];
+			if( !empty( $this->get_option( 'id_split' ) ) ) :
+				$splits[] = [
+					"recipient"             => $this->get_option( 'id_split' ),
+					"percentage"            => (int) $this->get_option( 'percentual_split' ),
+					"amount"                => (int) $this->get_option( 'valor_split' ),
+					"charge_processing_fee" => (int) $this->split_liquido,
+					"liable"                => (int) $this->split_prezuiso,
+				];
+			endif; 
+			if( !empty( $this->get_option( 'id_split_2' ) ) ) :
+				$splits[] = [
+					"recipient"             => $this->get_option( 'id_split_2' ),
+					"percentage"            => (int) $this->get_option( 'percentual_split_2' ),
+					"amount"                => (int) $this->get_option( 'valor_split_2' ),
+					"charge_processing_fee" => (int) $this->split_liquido,
+					"liable"                => (int) $this->split_prezuiso,
+				];
+			endif; 
+			if( !empty( $this->get_option( 'id_split_3' ) ) ) :
+				$splits[] = [
+					"recipient"             => $this->get_option( 'id_split_3' ),
+					"percentage"            => (int) $this->get_option( 'percentual_split_3' ),
+					"amount"                => (int) $this->get_option( 'valor_split_3' ),
+					"charge_processing_fee" => (int) $this->split_liquido,
+					"liable"                => (int) $this->split_prezuiso,
+				];
+			endif; 
 			return [
-				'split_rules' =>[ 
-					[
-						"recipient"             => $this->split_seller,
-						"liable"                => (int) $this->split_prezuiso,
-						"charge_processing_fee" => (int) $this->split_liquido,
-						"percentage"            => (int) $this->split_percent,
-						"amount"                => (int) $this->split_valor
-					]
-				]
+				'split_rules' => $splits
 			];
 		// endif;
 		// return [];

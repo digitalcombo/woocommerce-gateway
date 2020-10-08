@@ -54,3 +54,87 @@ add_action( 'woocommerce_after_cart_contents', function() {
 	// $app->products_recorrente( 83 );
 
 } );
+
+function add_list_order_btn_duplicate( $columns ) 
+{
+    $columns['wc_order_duplicate'] = 'Duplicar';
+	return $columns;
+}
+add_filter( 'manage_edit-shop_order_columns', 'add_list_order_btn_duplicate' );
+
+
+function wc_btn_order_duplicate( $column ) 
+{
+    global $post;
+    if ( 'wc_order_duplicate' === $column ) :
+		echo "
+			<a href=\"javascript:void(0)\" onclick=\"globalThis.duplicar('$post->ID', this)\" class=\"button wc-action-button wc-action-button-processing processing\"> 
+				Duplicar 
+				#<b>$post->ID</b>
+			</a>
+		";
+	endif;
+}
+add_action( 'manage_shop_order_posts_custom_column', 'wc_btn_order_duplicate' );
+
+
+add_action( 'rest_api_init', function () {
+	register_rest_route( 'dc-api/v1', '/order/(?P<id>\d+)', array(
+	  'methods' => 'GET',
+	  'callback' => 'duplicar_order',
+	) );
+} );
+
+function duplicar_order( $param )
+{
+	$original_order = new WC_Order( $param->get_param('id') );
+    $user_id        = $original_order->get_user_id();
+	$order = wc_create_order( [
+		'status'        => 'on-hold',
+		'customer_id'   => $user_id,
+		'customer_note' => '',
+		'total'         => $original_order->get_total(),
+	] );
+
+	$user = get_user_by( 'ID', $user_id );
+
+	$fname     = $user->first_name;
+	$lname     = $user->last_name;
+	$email     = $user->user_email;
+	$address_1 = get_user_meta( $user_id, 'billing_address_1', true );
+	$address_2 = get_user_meta( $user_id, 'billing_address_2', true );
+	$city      = get_user_meta( $user_id, 'billing_city', true );
+	$postcode  = get_user_meta( $user_id, 'billing_postcode', true );
+	$country   = get_user_meta( $user_id, 'billing_country', true );
+	$state     = get_user_meta( $user_id, 'billing_state', true );
+	$address         = array(
+		'first_name' => $fname,
+		'last_name'  => $lname,
+		'email'      => $email,
+		'address_1'  => $address_1,
+		'address_2'  => $address_2,
+		'city'       => $city,
+		'state'      => $state,
+		'postcode'   => $postcode,
+		'country'    => $country,
+	);
+
+	$order->set_address( $address, 'billing' );
+	$order->set_address( $address, 'shipping' );
+
+	foreach( $original_order->get_items() as $product ) :
+		$id_prod = $product['product_id'];
+		$is_prod = wc_get_product( $id_prod );
+		$order->add_product( $is_prod, 1);
+	endforeach;
+
+	$order->calculate_totals();
+	return [
+		"status" => $param->get_param('id')
+	];
+}
+
+function wc_script_order_duplique_js() {
+    wp_enqueue_script( 'my_custom_script', plugin_dir_url( __FILE__ ) . 'static/js/wc-order-duplicate.js', [], '1.0' );
+}
+add_action( 'admin_enqueue_scripts', 'wc_script_order_duplique_js' );
