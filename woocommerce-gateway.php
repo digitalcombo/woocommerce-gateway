@@ -95,12 +95,8 @@ function duplicar_order( $param )
 		'customer_note' => '',
 		'total'         => $original_order->get_total(),
 	] );
+	
 
-	$user = get_user_by( 'ID', $user_id );
-
-	$fname     = $user->first_name;
-	$lname     = $user->last_name;
-	$email     = $user->user_email;
 	$address_1 = get_user_meta( $user_id, 'billing_address_1', true );
 	$address_2 = get_user_meta( $user_id, 'billing_address_2', true );
 	$city      = get_user_meta( $user_id, 'billing_city', true );
@@ -108,9 +104,9 @@ function duplicar_order( $param )
 	$country   = get_user_meta( $user_id, 'billing_country', true );
 	$state     = get_user_meta( $user_id, 'billing_state', true );
 	$address         = array(
-		'first_name' => $fname,
-		'last_name'  => $lname,
-		'email'      => $email,
+		'first_name' => $original_order->get_billing_first_name(),
+		'last_name'  => $original_order->get_billing_last_name(),
+		'email'      => $original_order->get_billing_email(),
 		'address_1'  => $address_1,
 		'address_2'  => $address_2,
 		'city'       => $city,
@@ -127,10 +123,11 @@ function duplicar_order( $param )
 		$is_prod = wc_get_product( $id_prod );
 		$order->add_product( $is_prod, 1);
 	endforeach;
-
+	header('Content-Type: text/html; charset=utf-8');
 	$order->calculate_totals();
 	return [
-		"status" => $param->get_param('id')
+		"status" => $param->get_param('id'),
+		"user"   => $address
 	];
 }
 

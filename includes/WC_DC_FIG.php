@@ -254,11 +254,6 @@ final class WC_DC_FIG
             'total'         => $original_order->get_total(),
         ] );
 
-        $user = get_user_by( 'ID', $user_id );
-
-        $fname     = $user->first_name;
-        $lname     = $user->last_name;
-        $email     = $user->user_email;
         $address_1 = get_user_meta( $user_id, 'billing_address_1', true );
         $address_2 = get_user_meta( $user_id, 'billing_address_2', true );
         $city      = get_user_meta( $user_id, 'billing_city', true );
@@ -266,9 +261,9 @@ final class WC_DC_FIG
         $country   = get_user_meta( $user_id, 'billing_country', true );
         $state     = get_user_meta( $user_id, 'billing_state', true );
         $address         = array(
-            'first_name' => $fname,
-            'last_name'  => $lname,
-            'email'      => $email,
+            'first_name' => $original_order->get_billing_first_name(),
+            'last_name'  => $original_order->get_billing_last_name(),
+            'email'      => $original_order->get_billing_email(),
             'address_1'  => $address_1,
             'address_2'  => $address_2,
             'city'       => $city,
@@ -286,10 +281,7 @@ final class WC_DC_FIG
             $order->add_product( $is_prod, 1);
         endforeach;
 
-        $order->calculate_totals();
-
-	    // $to_order_item_id = $myorder->get_id();
-        
+        $order->calculate_totals();        
  
     }
 
