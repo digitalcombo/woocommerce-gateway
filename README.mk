@@ -9,10 +9,4 @@ https://docs.woocommerce.com/document/subscriptions/develop/data-structure/#sect
 
 https://rudrastyh.com/woocommerce/payment-gateway-plugin.html
 
-- [x] ativar teste
-- [ ] WC_Subscription
-- [x] add type produto
-- [x] CSS card Mobile
-- [x] checkou add btn pagar cartão de debito
-- [ ] cartão de debito não autorizado
-- [ ] wp_fig define( 'DISABLE_WP_CRON', true );
+- [ ] deixar no configuração de meio de pagamento a possibilidade de personalizar o texto de finalização da compra
