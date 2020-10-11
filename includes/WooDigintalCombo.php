@@ -9,7 +9,7 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 		$this->has_fields         = WC_DC_FIG::HAS_FIELDS;
 		$this->method_title       = WC_DC_FIG::METHOD_TITLE;
 		$this->method_description = WC_DC_FIG::HAS_DESCRIPT;
-		$this->order_button_text  = WC_DC_FIG::TEXT_BUTTON;		
+		$this->order_button_text  = $this->get_option( 'text_btn' );	
 		$this->init_form_fields();
 		$this->init_settings();
 		$this->title               = $this->get_option( 'title' );
@@ -55,6 +55,7 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 				$this->plan_frequency = $recorrente;
 				$this->plan_amount    = $product['subtotal'];
 				$this->new_plan();
+				update_post_meta( $pedido_id, "id_plano", $this->plan_id );
 				$resposta = $this->new_sub( $pedido_id, $pedido_type );
 			} 
              
@@ -88,6 +89,14 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 		$tipo_transacao   = isset( $_POST["type_pagamento"] ) ? $_POST["type_pagamento"]: "cartao_credito" ;
 		$validar_trasacao = false;
 		$has_recorrente   = $this->has_products_recorrente( $pedido_id );
+
+		if( $has_recorrente ) {
+			update_post_meta( $pedido_id, "pagamento_recorrente", 'Sim' );
+			$proximo_pagamento = date('d/m/Y', strtotime('+30 days', time()));
+			update_post_meta( $pedido_id, "pagamento_proximo_pagamento", $proximo_pagamento );
+		} else {
+			update_post_meta( $pedido_id, "pagamento_recorrente", 'Não' );
+		}
 
 		switch ( $tipo_transacao ) 
 		{
@@ -181,6 +190,8 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 			$pedido->add_order_note(  "CODIGO DE BARRAS: $CODE", 'woothemes'  );
 			$pedido->add_order_note(  "TOKEN PEDIDO: $ID", 'woothemes'  );
 			$pedido->add_order_note(  "URL BOLETO: $BOLETO", 'woothemes'  );
+			$pedido_id = $pedido->id;
+			update_post_meta( $pedido_id, "pagamento_metodo", 'Boleto' );
 		}
 		$this->debug( $boleto , true );	
 		return $validacao;
@@ -286,6 +297,8 @@ class WooDigintalCombo  extends WC_Payment_Gateway
 		{
 			$ID     = $pagar_com_cartao->payment_method->id;
 			$pedido->add_order_note(  "TOKEN PEDIDO: $ID", 'woothemes' );
+			$pedido_id = $pedido->id;
+			update_post_meta( $pedido_id, "pagamento_metodo", 'Cartão' );
 		}
 		return $validacao;
 	}

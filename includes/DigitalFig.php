@@ -18,6 +18,13 @@ final class DigitalFig
                 'default'     => '',
                 'desc_tip'    => true,
             ],
+            'text_btn' => [
+                'title'       => 'Texto Botão',
+                'type'        => 'text',
+                'description' => '',
+                'default'     => '',
+                'desc_tip'    => false,
+            ],
             'description' => [
                 'title'       => 'Descrição',
                 'type'        => 'textarea',
