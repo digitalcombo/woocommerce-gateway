@@ -1,0 +1,14 @@
+on: push
+name: Digital Combo Pay
+jobs:
+  FTP-Deploy-Action:
+    name: Atualizar
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: FTP-Deploy-Action
+      uses: SamKirkland/FTP-Deploy-Action@master
+      env:
+        FTP_SERVER: 162.241.203.181/wp-content/plugins/woocommerce-gateway
+        FTP_USERNAME: homologacao@homologacao.digitalcombo.com.br
+        FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
